@@ -52,17 +52,23 @@ const verifySignatureFn = (req) => {
       const event = req.headers["x-github-event"];
       const payload = req.body;
 
-      const actor = payload.sender?.login ?? "N/A";
-      const repo = payload.repository?.full_name ?? "Organization";
-      const action = payload.action ?? "";
+      const actor = payload.sender?.login;
+      const repo = payload.repository?.full_name;
+      const action = payload.action;
 
-      const message = `
-        🔔 *GitHub Org Event*
-        📌 Event: *${event}*
-        👤 Actor: ${actor}
-        📂 Repo: ${repo}
-        ⚡ Action: ${action}
-        `;
+      let message = `🔔 *GitHub Org Event*\n📌 Event: *${event}*`;
+
+      if (actor) {
+        message += `\n👤 Actor: ${actor}`;
+      }
+
+      if (repo) {
+        message += `\n📂 Repo: ${repo}`;
+      }
+
+      if (action) {
+        message += `\n⚡ Action: ${action}`;
+      }
 
       await axios.post(
         `https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage`,
